@@ -1,0 +1,103 @@
+#include <stdio.h>
+
+void addMatrices(int A[2][2], int B[2][2], int C[2][2]) {
+	int i,j;
+    for ( i = 0; i < 2; i++)
+        for (j = 0; j < 2; j++)
+            C[i][j] = A[i][j] + B[i][j];
+}
+
+void subtractMatrices(int A[2][2], int B[2][2], int C[2][2]) {
+	int i,j;
+    for (i = 0; i < 2; i++)
+        for ( j = 0; j < 2; j++)
+            C[i][j] = A[i][j] - B[i][j];
+}
+
+void strassenMultiply(int A[2][2], int B[2][2], int C[2][2]) {
+    if ((A[0][0] == 0 && A[0][1] == 0 && A[1][0] == 0 && A[1][1] == 0) ||
+        (B[0][0] == 0 && B[0][1] == 0 && B[1][0] == 0 && B[1][1] == 0)) {
+        	int i,j;
+        for ( i = 0; i < 2; i++)
+            for ( j = 0; j < 2; j++)
+                C[i][j] = 0;
+    } else {
+        int M1[2][2], M2[2][2], M3[2][2], M4[2][2], M5[2][2], M6[2][2], M7[2][2];
+        int temp1[2][2], temp2[2][2];
+
+        addMatrices(A[0][0], A[1][1], temp1);
+        addMatrices(B[0][0], B[1][1], temp2);
+        strassenMultiply(temp1, temp2, M1);
+
+        addMatrices(A[1][0], A[1][1], temp1);
+        strassenMultiply(temp1, B[0][0], M2);
+
+        subtractMatrices(B[0][1], B[1][1], temp1);
+        strassenMultiply(A[0][0], temp1, M3);
+
+        subtractMatrices(B[1][0], B[0][0], temp1);
+        strassenMultiply(A[1][1], temp1, M4);
+
+        addMatrices(A[0][0], A[0][1], temp1);
+        strassenMultiply(temp1, B[1][1], M5);
+
+        subtractMatrices(A[1][0], A[0][0], temp1);
+        addMatrices(B[0][0], B[0][1], temp2);
+        strassenMultiply(temp1, temp2, M6);
+
+        subtractMatrices(A[0][1], A[1][1], temp1);
+        addMatrices(B[1][0], B[1][1], temp2);
+        strassenMultiply(temp1, temp2, M7);
+
+        addMatrices(M1, M4, temp1);
+        subtractMatrices(M7, M5, temp2);
+        addMatrices(temp1, temp2, C[0][0]);
+
+        addMatrices(M3, M5, C[0][1]);
+        addMatrices(M2, M4, C[1][0]);
+
+        subtractMatrices(M1, M2, temp1);
+        addMatrices(M3, M6, temp2);
+        addMatrices(temp1, temp2, C[1][1]);
+    }
+}
+
+void printMatrix(int matrix[2][2]) {
+	int i,j;
+    for ( i = 0; i < 2; i++) {
+        for (j = 0; j < 2; j++)
+            printf("%d ", matrix[i][j]);
+        printf("\n");
+    }
+}
+
+int main() {
+    int A[2][2], B[2][2];
+
+    printf("Enter values for Matrix A (2x2):\n");
+    int i,j;
+    for (i = 0; i < 2; i++)
+        for (j = 0; j < 2; j++)
+            scanf("%d", &A[i][j]);
+
+    printf("Enter values for Matrix B (2x2):\n");
+    
+    for (i = 0; i < 2; i++)
+        for ( j = 0; j < 2; j++)
+            scanf("%d", &B[i][j]);
+
+    int C[2][2];
+
+    printf("\nMatrix A:\n");
+    printMatrix(A);
+
+    printf("\nMatrix B:\n");
+    printMatrix(B);
+
+    strassenMultiply(A, B, C);
+
+    printf("\nResultant Matrix C (Strassen's Multiplication):\n");
+    printMatrix(C);
+
+    return 0;
+}
